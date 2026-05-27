@@ -135,7 +135,7 @@ CampusFest es una plataforma web para la gestión integral del festival estudian
 
 ---
 
-## 4. Matriz de Trazabilidad //// en proceso
+## 4. Matriz de Trazabilidad //// EN DESARROLLO
 
 La siguiente matriz resume la relación entre cada grupo de requisitos, su implementación, su prueba y el elemento Jira asociado.
 
