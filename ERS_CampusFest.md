@@ -2,9 +2,6 @@
 
 ## CampusFest - Sistema de Gestión del Festival Estudiantil
 
-**Versión:** 1.0.0 | **Fecha:** 27 de mayo de 2026 | **Estado:** En construcción
-
----
 
 ## 1. Descripción General del Sistema
 
