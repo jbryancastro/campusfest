@@ -63,7 +63,7 @@ CampusFest es una plataforma web para la gestión integral del festival estudian
 | RF-15 | El sistema debe calcular automáticamente el puntaje total de cada participante según las calificaciones ingresadas. |
 | RF-16 | El administrador debe poder publicar los resultados de un evento para que sean visibles públicamente. |
 | RF-17 | El sistema debe enviar correos de confirmación al registrar una cuenta, al inscribirse a un evento y al cambiar el estado de una inscripción. |
-| RF-18 | El administrador debe poder generar reportes de participación por evento en formato PDF o HTML. |
+
 
 ### 2.2 Requisitos No Funcionales
 
@@ -152,5 +152,7 @@ La siguiente matriz resume la relación entre cada grupo de requisitos, su imple
 | RNF-08 a RNF-09 | Calidad técnica y auditoría | CP-26 a CP-27 | Epic CF-E07, Historia CF-H15, Tareas CF-T26 a CF-T27 |
 
 
+
+|--notas de bitacora 1  del clienta ///// Solamente los administradores se deben poder registrar en el sistema. Los participantes no. --|
 
 
