@@ -1,0 +1,27 @@
+
+{
+  "_comment_inicio": "Este archivo guarda los datos principales del proyecto y lo que necesita para funcionar.",
+  "name": "campusfest",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbryancastro/campusfest.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jbryancastro/campusfest/issues"
+  },
+  "homepage": "https://github.com/jbryancastro/campusfest#readme",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.7.4"
+  }
+}
