@@ -1,4 +1,3 @@
-
 {
   "_comment_inicio": "Este archivo guarda los datos principales del proyecto y lo que necesita para funcionar.",
   "name": "campusfest",
@@ -20,6 +19,7 @@
   "homepage": "https://github.com/jbryancastro/campusfest#readme",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.7.4"

@@ -1,0 +1,286 @@
+<!-- Indicamos que este archivo usa HTML5 -->
+<!DOCTYPE html>
+<!-- Inicio del documento HTML en idioma espanol -->
+<html lang="es">
+
+<head>
+    <!-- Configura caracteres para tildes y simbolos -->
+    <meta charset="UTF-8">
+    <!-- Hace la pagina adaptable a celular y tablet -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Titulo que aparece en la pestana del navegador -->
+    <title>Lista de Eventos</title>
+    <!-- Conecta el archivo de estilos CSS -->
+    <link rel="stylesheet" href="/css/estilos.css">
+</head>
+
+<body>
+    <!-- Titulo principal de la vista -->
+    <h1>Eventos Registrados</h1>
+    <!-- Tabla donde se muestran los eventos registrados -->
+    <table border="1" id="tablaEventos">
+        <!-- Encabezado de la tabla -->
+        <thead>
+            <!-- Fila de titulos de columnas -->
+            <tr>
+                <!-- Columna del nombre del evento -->
+                <th>Nombre</th>
+                <!-- Columna de la fecha del evento -->
+                <th>Fecha</th>
+                <!-- Columna de la descripcion del evento -->
+                <th>Descripción</th>
+                <!-- Columna de la imagen del evento -->
+                <th>Imagen</th>
+                <!-- Columna de botones de accion -->
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <!-- Cuerpo de la tabla: se llena con JavaScript -->
+        <tbody id="cuerpoTabla">
+            <!-- Aquí se cargarán los eventos -->
+        </tbody>
+    </table>
+    <!-- Fondo oscuro del modal de edicion -->
+    <div id="modalEditar" class="modal" aria-hidden="true">
+        <!-- Caja principal del modal -->
+        <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalEditar">
+            <!-- Encabezado del modal -->
+            <div class="modal-encabezado">
+                <!-- Titulo del modal -->
+                <h2 id="tituloModalEditar">Editar Evento</h2>
+                <!-- Boton para cerrar el modal -->
+                <button type="button" class="cerrar-modal" onclick="cerrarModalEditar()" aria-label="Cerrar">
+                    X
+                </button>
+            </div>
+            <!-- Formulario para editar datos del evento -->
+            <form id="formEditarModal">
+                <!-- Etiqueta del campo nombre -->
+                <label for="editarNombre">Nombre:</label>
+                <!-- Campo para editar nombre -->
+                <input type="text" id="editarNombre" required>
+                <!-- Etiqueta del campo fecha -->
+                <label for="editarFecha">Fecha:</label>
+                <!-- Campo para editar fecha -->
+                <input type="date" id="editarFecha" required>
+                <!-- Etiqueta del campo descripcion -->
+                <label for="editarDescripcion">Descripcion:</label>
+                <!-- Campo para editar descripcion -->
+                <textarea id="editarDescripcion" required></textarea>
+                <!-- Etiqueta del campo imagen -->
+                <label for="editarImagen">Imagen:</label>
+                <!-- Campo para editar ruta de imagen -->
+                <input type="text" id="editarImagen" required>
+                <!-- Contenedor de botones de accion del modal -->
+                <div class="acciones-modal">
+                    <!-- Boton para cancelar y cerrar modal -->
+                    <button type="button" onclick="cerrarModalEditar()">Cancelar</button>
+                    <!-- Boton para guardar cambios del evento -->
+                    <button type="submit">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Script con toda la logica de listar, editar y eliminar eventos -->
+    <script>
+// URL base para consultar y modificar eventos.
+const API_EVENTOS = "http://localhost:3000/eventos";
+// Guardamos una lista local para reutilizar datos al editar.
+let eventos = [];
+// Guardamos el id del evento que se esta editando.
+let idEventoEditando = "";
+
+// Referencia al cuerpo de la tabla donde pintamos eventos.
+const cuerpoTabla = document.getElementById("cuerpoTabla");
+// Referencia al modal de edicion.
+const modalEditar = document.getElementById("modalEditar");
+// Referencia al formulario de edicion del modal.
+const formEditarModal = document.getElementById("formEditarModal");
+// Referencia al campo nombre del modal.
+const campoNombre = document.getElementById("editarNombre");
+// Referencia al campo fecha del modal.
+const campoFecha = document.getElementById("editarFecha");
+// Referencia al campo descripcion del modal.
+const campoDescripcion = document.getElementById("editarDescripcion");
+// Referencia al campo imagen del modal.
+const campoImagen = document.getElementById("editarImagen");
+
+// Esta funcion abre el modal.
+function abrirModalEditar() {
+    // Agregamos la clase que lo muestra en pantalla.
+    modalEditar.classList.add("abierto");
+    // Marcamos que el modal esta visible.
+    modalEditar.setAttribute("aria-hidden", "false");
+}
+
+// Esta funcion cierra el modal.
+function cerrarModalEditar() {
+    // Quitamos la clase para ocultarlo.
+    modalEditar.classList.remove("abierto");
+    // Marcamos que el modal ya no esta visible.
+    modalEditar.setAttribute("aria-hidden", "true");
+    // Limpiamos el id para evitar ediciones incorrectas.
+    idEventoEditando = "";
+}
+
+// Esta funcion consulta eventos y llena la tabla.
+async function cargarEventos() {
+    // Inicia bloque de control de errores.
+    try {
+        // Pedimos la lista completa al servidor.
+        const respuesta = await fetch(API_EVENTOS);
+        // Convertimos la respuesta a JSON.
+        eventos = await respuesta.json();
+        // Limpiamos la tabla antes de volver a pintarla.
+        cuerpoTabla.innerHTML = "";
+
+        // Recorremos cada evento para crear una fila.
+        eventos.forEach((evento) => {
+            // Armamos una fila con datos y botones de accion.
+            cuerpoTabla.innerHTML += `
+                <tr>
+                    <td>${evento.nombre}</td>
+                    <td>${evento.fecha}</td>
+                    <td>${evento.descripcion}</td>
+                    <td>
+                        <img src="http://localhost:3000${evento.imagen}" width="120" alt="${evento.nombre}">
+                    </td>
+                    <td>
+                        <button onclick="editarEvento('${evento._id}')">Editar</button>
+                        <button onclick="eliminarEvento('${evento._id}')">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+        });
+    // Si algo falla, entra aqui.
+    } catch (error) {
+        // Mostramos el error en consola para depuracion.
+        console.log("Error cargando eventos:", error);
+    }
+}
+
+// Esta funcion prepara el modal con los datos del evento.
+function editarEvento(id) {
+    // Buscamos el evento en la lista local por id.
+    const evento = eventos.find((item) => item._id === id);
+    // Si no existe, avisamos y detenemos la funcion.
+    if (!evento) {
+        alert("No se encontro el evento para editar.");
+        return;
+    }
+
+    // Guardamos el id que se editara al enviar el formulario.
+    idEventoEditando = id;
+    // Cargamos nombre actual en el input.
+    campoNombre.value = evento.nombre || "";
+    // Cargamos fecha actual en el input.
+    campoFecha.value = evento.fecha || "";
+    // Cargamos descripcion actual en el textarea.
+    campoDescripcion.value = evento.descripcion || "";
+    // Cargamos ruta de imagen actual en el input.
+    campoImagen.value = evento.imagen || "";
+    // Abrimos el modal para que el usuario edite.
+    abrirModalEditar();
+}
+
+// Esta funcion elimina un evento por id.
+async function eliminarEvento(id) {
+    // Preguntamos confirmacion antes de borrar.
+    const confirmar = confirm("Desea eliminar este evento?");
+    // Si el usuario cancela, no hacemos nada.
+    if (!confirmar) {
+        return;
+    }
+
+    // Inicia bloque de control de errores.
+    try {
+        // Enviamos solicitud DELETE al servidor.
+        const respuesta = await fetch(`${API_EVENTOS}/${id}`, { method: "DELETE" });
+        // Leemos respuesta en JSON.
+        const resultado = await respuesta.json();
+        // Si hubo error del servidor, avisamos y salimos.
+        if (!respuesta.ok) {
+            alert(resultado.mensaje || "No se pudo eliminar el evento.");
+            return;
+        }
+        // Confirmamos eliminacion al usuario.
+        alert("Evento eliminado");
+        // Volvemos a cargar tabla para reflejar cambios.
+        cargarEventos();
+    // Si algo falla, entra aqui.
+    } catch (error) {
+        // Mostramos error en consola para depuracion.
+        console.log("Error eliminando evento:", error);
+    }
+}
+
+// Escuchamos el envio del formulario del modal.
+formEditarModal.addEventListener("submit", async function (e) {
+    // Evitamos que el formulario recargue la pagina.
+    e.preventDefault();
+    // Si no hay id seleccionado, detenemos el proceso.
+    if (!idEventoEditando) {
+        alert("No hay un evento seleccionado para editar.");
+        return;
+    }
+
+    // Construimos el objeto con los nuevos datos.
+    const eventoActualizado = {
+        // Tomamos el nombre escrito por el usuario.
+        nombre: campoNombre.value,
+        // Tomamos la fecha escrita por el usuario.
+        fecha: campoFecha.value,
+        // Tomamos la descripcion escrita por el usuario.
+        descripcion: campoDescripcion.value,
+        // Tomamos la imagen escrita por el usuario.
+        imagen: campoImagen.value
+    };
+
+    // Inicia bloque de control de errores.
+    try {
+        // Enviamos solicitud PUT para actualizar el evento.
+        const respuesta = await fetch(`${API_EVENTOS}/${idEventoEditando}`, {
+            // Indicamos metodo de actualizacion.
+            method: "PUT",
+            // Indicamos que enviamos JSON.
+            headers: { "Content-Type": "application/json" },
+            // Convertimos el objeto a texto JSON.
+            body: JSON.stringify(eventoActualizado)
+        });
+        // Leemos la respuesta del servidor.
+        const resultado = await respuesta.json();
+        // Si el servidor responde error, avisamos y salimos.
+        if (!respuesta.ok) {
+            alert(resultado.mensaje || "No se pudo actualizar el evento.");
+            return;
+        }
+        // Confirmamos actualizacion.
+        alert("Evento actualizado");
+        // Cerramos el modal.
+        cerrarModalEditar();
+        // Recargamos la lista para mostrar el cambio.
+        cargarEventos();
+    // Si algo falla, entra aqui.
+    } catch (error) {
+        // Mostramos error en consola para depuracion.
+        console.log("Error actualizando evento:", error);
+    }
+});
+
+// Escuchamos clics sobre el fondo oscuro del modal.
+modalEditar.addEventListener("click", function (e) {
+    // Si se hizo clic justo en el fondo, cerramos.
+    if (e.target.id === "modalEditar") {
+        // Cerramos modal para mejor experiencia.
+        cerrarModalEditar();
+    }
+});
+
+// Cargamos eventos al abrir la pagina.
+cargarEventos();
+
+</script>
+<!-- Fin del contenido visible -->
+</body>
+<!-- Fin del documento HTML -->
+</html>

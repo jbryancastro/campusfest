@@ -1,0 +1,87 @@
+<!-- Indicamos que este archivo usa HTML5 -->
+<!DOCTYPE html>
+<!-- Inicio del documento HTML en idioma espanol -->
+<html lang="es">
+
+<head>
+    <!-- Configura caracteres para tildes y simbolos -->
+    <meta charset="UTF-8">
+    <!-- Hace la pagina adaptable en celular y tablet -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Titulo que aparece en la pestana del navegador -->
+    <title>Registrar Evento</title>
+    <!-- Conecta los estilos CSS de la pagina -->
+    <link rel="stylesheet" href="/css/estilos.css">
+</head>
+
+<!-- Inicio del contenido visible de la pagina -->
+<body>
+    <!-- Titulo principal de la vista -->
+    <h1>Registro de Eventos</h1>
+    <!-- Formulario para crear un evento -->
+    <form id="formEvento">
+        <!-- Bloque del campo nombre -->
+        <div>
+            <!-- Etiqueta del campo nombre -->
+            <label for="nombre">Nombre del Evento</label><br>
+            <!-- Entrada de texto para escribir el nombre -->
+            <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                required>
+        </div>
+        <!-- Separacion visual entre campos -->
+        <br>
+        <!-- Bloque del campo fecha -->
+        <div>
+            <!-- Etiqueta del campo fecha -->
+            <label for="fecha">Fecha</label><br>
+            <!-- Entrada de texto para escribir la fecha -->
+            <input
+                type="text"
+                id="fecha"
+                name="fecha"
+                required>
+        </div>
+        <!-- Separacion visual entre campos -->
+        <br>
+        <!-- Bloque del campo descripcion -->
+        <div>
+            <!-- Etiqueta del campo descripcion -->
+            <label for="descripcion">Descripción</label><br>
+            <!-- Area de texto para la descripcion del evento -->
+            <textarea
+                id="descripcion"
+                name="descripcion"
+                rows="5"
+                required></textarea>
+        </div>
+        <!-- Separacion visual entre campos -->
+        <br>
+        <!-- Bloque del campo imagen -->
+        <div>
+            <!-- Etiqueta del campo imagen -->
+            <label for="imagen">Ruta de la Imagen</label><br>
+            <!-- Entrada de texto para la ruta o URL de la imagen -->
+            <input
+                type="text"
+                id="imagen"
+                name="imagen"
+                placeholder="../img/robotica.jpeg"
+                required>
+        </div>
+        <!-- Separacion visual antes del boton -->
+        <br>
+        <!-- Boton que envia el formulario -->
+        <button type="submit">
+            <!-- Texto visible del boton -->
+            Registrar Evento
+        </button>
+    </form>
+    <!-- Conecta el JavaScript que maneja guardar y listar eventos -->
+    <script src="../js/eventos.js"></script>
+<!-- Fin del contenido visible -->
+</body>
+<!-- Fin del documento HTML -->
+</html>

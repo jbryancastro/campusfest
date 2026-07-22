@@ -1,0 +1,118 @@
+/* Selector del cuerpo completo de la pagina */
+body {
+    /* Fuente principal del texto */
+    font-family: Arial, sans-serif;
+    /* Color de fondo general de la pagina */
+    background-color: #f4f4f4;
+}
+
+/* Selector de todas las tablas */
+table {
+    /* La tabla ocupa todo el ancho disponible */
+    width: 100%;
+    /* Une los bordes de las celdas para que se vean como uno solo */
+    border-collapse: collapse;
+}
+
+/* Selector de celdas de encabezado y celdas normales */
+th, td {
+    /* Espacio interno dentro de cada celda */
+    padding: 10px;
+    /* Borde suave para separar celdas */
+    border: 1px solid #ccc;
+}
+
+/* Contenedor principal del modal (fondo oscuro) */
+.modal {
+    /* Fija el modal sobre toda la ventana */
+    position: fixed;
+    /* Lo extiende a toda la pantalla: arriba, derecha, abajo, izquierda */
+    inset: 0;
+    /* Lo mantiene oculto por defecto */
+    display: none;
+    /* Alinea el contenido al centro vertical */
+    align-items: center;
+    /* Alinea el contenido al centro horizontal */
+    justify-content: center;
+    /* Fondo negro semitransparente */
+    background: rgba(0, 0, 0, 0.55);
+    /* Lo coloca por encima de otros elementos */
+    z-index: 1000;
+    /* Espacio interno para que no se pegue a los bordes en pantallas pequenas */
+    padding: 16px;
+}
+
+/* Estado del modal cuando esta abierto */
+.modal.abierto {
+    /* Muestra el modal usando flex */
+    display: flex;
+}
+
+/* Caja blanca interna del modal */
+.modal-contenido {
+    /* Fondo blanco de la caja */
+    background: #fff;
+    /* Ancho maximo 560px, pero adaptable al 100% en pantallas pequenas */
+    width: min(560px, 100%);
+    /* Esquinas redondeadas */
+    border-radius: 10px;
+    /* Espacio interno de la caja */
+    padding: 20px;
+    /* Sombra para dar efecto de elevacion */
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+}
+
+/* Fila superior del modal con titulo y boton cerrar */
+.modal-encabezado {
+    /* Distribuye elementos en una fila */
+    display: flex;
+    /* Deja titulo a la izquierda y boton a la derecha */
+    justify-content: space-between;
+    /* Centra verticalmente titulo y boton */
+    align-items: center;
+    /* Espacio debajo del encabezado */
+    margin-bottom: 14px;
+}
+
+/* Boton para cerrar el modal */
+.cerrar-modal {
+    /* Borde suave del boton */
+    border: 1px solid #bbb;
+    /* Fondo blanco del boton */
+    background: #fff;
+    /* Esquinas redondeadas del boton */
+    border-radius: 6px;
+    /* Espacio interno del boton */
+    padding: 4px 8px;
+    /* Cambia el cursor para indicar que es clickeable */
+    cursor: pointer;
+}
+
+/* Formulario de edicion dentro del modal */
+#formEditarModal {
+    /* Organiza los campos en una cuadricula simple */
+    display: grid;
+    /* Separa los campos entre si */
+    gap: 10px;
+}
+
+/* Inputs y textarea del formulario de edicion */
+#formEditarModal input,
+#formEditarModal textarea {
+    /* Ocupa todo el ancho del contenedor */
+    width: 100%;
+    /* Incluye padding y borde dentro del ancho total */
+    box-sizing: border-box;
+    /* Espacio interno de cada campo */
+    padding: 8px;
+}
+
+/* Contenedor de botones de accion del modal */
+.acciones-modal {
+    /* Alinea botones en una fila */
+    display: flex;
+    /* Coloca los botones al lado derecho */
+    justify-content: flex-end;
+    /* Separa botones entre si */
+    gap: 10px;
+}

@@ -1,143 +1,172 @@
-/* este es elcorazón de la aplicación Node.js. Es el archivo que inicia el servidor 
-y coordina todo lo que ocurre entre el navegador y conecta con la base de datos  */
+/*
+Este archivo levanta el servidor de Node.js.
+Tambien conecta con MongoDB y define las rutas CRUD de eventos.
+*/
 
-// Importa la librería Express para crear el servidor web
+// Importamos Express para crear el servidor web.
 const express = require("express");
-
-// Importa Mongoose, que permite conectar Node.js con MongoDB
+// Importamos Mongoose para trabajar con MongoDB.
 const mongoose = require("mongoose");
-
-// Lee el archivo .env y carga sus variables de entorno
+// Importamos CORS para permitir peticiones desde el navegador.
+const cors = require("cors");
+// Cargamos variables de entorno desde el archivo .env.
 require("dotenv").config();
-
-// Importa el modelo Evento para trabajar con la colección eventos
+// Importamos el modelo de eventos.
 const Evento = require("./models/Evento");
+// Importamos path para construir rutas de archivos.
+const path = require("path");
 
-// Crea la aplicación de Express
+// Creamos la aplicacion de Express.
 const app = express();
-
-// Define el puerto donde se ejecutará el servidor
+// Definimos el puerto donde correra el servidor.
 const PORT = 3000;
 
-/*==================================================
-    CONEXIÓN A MONGODB ATLAS
-==================================================*/
+// Activamos CORS para aceptar solicitudes de otros origenes.
+app.use(cors());
+// Permitimos recibir datos JSON en req.body.
+app.use(express.json());
+// Publicamos archivos estaticos del proyecto (html, css, js, img).
+app.use(express.static(__dirname));
 
-// Se conecta a MongoDB utilizando la cadena almacenada
-// en la variable MONGO_URI del archivo .env
-mongoose.connect(process.env.MONGO_URI)
+// Conectamos a MongoDB usando la variable MONGO_URI.
+mongoose
+    .connect(process.env.MONGO_URI)
+    // Si conecta bien, mostramos mensaje en consola.
+    .then(() => {
+        console.log("Conectado a MongoDB Atlas");
+    })
+    // Si falla la conexion, mostramos el error.
+    .catch((error) => {
+        console.log("Error al conectar con MongoDB");
+        console.log(error);
+    });
 
-// Si la conexión fue exitosa, ejecuta esto
-.then(() => {
-
-    console.log("✅ Conectado a MongoDB Atlas");
-
-})
-
-// Si ocurrió algún error durante la conexión, ejecuta esto
-.catch((error) => {
-
-    console.log("❌ Error al conectar con MongoDB");
-
-    // Muestra el detalle del error
-    console.log(error);
-
+// Ruta para abrir directamente la pagina de registro de eventos.
+app.get("/eventos.html", (req, res) => {
+    // Enviamos el archivo html/eventos.html al navegador.
+    res.sendFile(path.join(__dirname, "html", "eventos.html"));
 });
 
-/*==================================================
-    CONFIGURACIÓN DE EXPRESS
-==================================================*/
-
-// Permite que el navegador pueda acceder a todos los
-// archivos que estén dentro de la carpeta "public"
-// (HTML, CSS, JavaScript, imágenes, etc.)
-app.use(express.static("public"));
-
-/*==================================================
-    RUTA PARA CREAR UN EVENTO DE PRUEBA
-==================================================*/
-
-// Cuando el navegador visite:
-// http://localhost:3000/crear-evento
-// este código guardará un documento en MongoDB.
-
-app.get("/crear-evento", async (req, res) => {
-
+// Ruta para obtener todos los eventos guardados.
+app.get("/eventos", async (req, res) => {
+    // Iniciamos bloque para capturar errores.
     try {
+        // Consultamos todos los eventos en MongoDB.
+        const eventos = await Evento.find();
+        // Respondemos con la lista de eventos en JSON.
+        res.json(eventos);
+    } catch (error) {
+        // Mostramos el error en consola para depurar.
+        console.log(error);
+        // Respondemos con error 500 si falla la consulta.
+        res.status(500).send("Error al obtener los eventos.");
+    }
+});
 
-        // Crea un nuevo objeto basado en el modelo Evento
+// Ruta para crear un nuevo evento.
+app.post("/eventos", async (req, res) => {
+    // Iniciamos bloque para capturar errores.
+    try {
+        // Creamos un objeto Evento con datos del body.
         const nuevoEvento = new Evento({
-
-            // Nombre del evento
-            nombre: "Concurso de Robótica",
-
-            // Fecha del evento
-            fecha: "24 de mayo de 2026",
-
-            // Descripción del evento
-            descripcion: "Competencia entre universidades.",
-
-            // Ruta de la imagen
-            imagen: "/img/robotica.jpeg"
-
+            // Guardamos nombre.
+            nombre: req.body.nombre,
+            // Guardamos fecha.
+            fecha: req.body.fecha,
+            // Guardamos descripcion.
+            descripcion: req.body.descripcion,
+            // Guardamos imagen.
+            imagen: req.body.imagen
         });
 
-        // Guarda el documento en MongoDB
+        // Guardamos el nuevo evento en la base de datos.
         await nuevoEvento.save();
 
-        // Envía un mensaje al navegador
-        res.send("✅ Evento guardado correctamente.");
-
+        // Respondemos con mensaje de exito y el evento creado.
+        res.json({
+            mensaje: "Evento creado correctamente",
+            evento: nuevoEvento
+        });
     } catch (error) {
-
-        // Muestra el error en la consola
+        // Mostramos el error en consola para depurar.
         console.log(error);
-
-        // Envía un mensaje al navegador
-        res.send("❌ Error al guardar el evento.");
-
+        // Respondemos con error 500 si falla el guardado.
+        res.status(500).json({
+            mensaje: "Error al crear evento"
+        });
     }
-
 });
 
-/*==================================================
-    OBTENER TODOS LOS EVENTOS
-==================================================*/
-
-// Cuando el navegador visite:
-// http://localhost:3000/eventos
-// el servidor consultará todos los eventos
-// almacenados en MongoDB.
-
-app.get("/eventos", async (req, res) => {
-
+// Ruta para obtener un evento por su id.
+app.get("/eventos/:id", async (req, res) => {
+    // Iniciamos bloque para capturar errores.
     try {
+        // Leemos el id enviado en la URL.
+        const id = req.params.id;
+        // Buscamos ese evento en MongoDB.
+        const evento = await Evento.findById(id);
 
-        // Busca todos los documentos de la colección eventos
-        const eventos = await Evento.find();
+        // Si no existe, devolvemos 404.
+        if (!evento) {
+            return res.status(404).json({
+                mensaje: "Evento no encontrado."
+            });
+        }
 
-        // Envía los eventos al navegador en formato JSON
-        res.json(eventos);
-
+        // Si existe, lo devolvemos en formato JSON.
+        res.json(evento);
     } catch (error) {
-
-        // Muestra el error en la consola
-        console.log(error);
-
-        // Envía un mensaje de error
-        res.status(500).send("Error al obtener los eventos.");
-
+        // Mostramos el error en consola.
+        console.error(error);
+        // Respondemos con error 500 si falla la consulta.
+        res.status(500).json({
+            mensaje: "Error al obtener el evento."
+        });
     }
-
 });
-/*==================================================
-    INICIAR EL SERVIDOR
-==================================================*/
 
-// Inicia el servidor y queda esperando solicitudes
-// desde el navegador en el puerto 3000
+// Ruta para eliminar un evento por id.
+app.delete("/eventos/:id", async (req, res) => {
+    // Iniciamos bloque para capturar errores.
+    try {
+        // Eliminamos el evento usando su id.
+        const evento = await Evento.findByIdAndDelete(req.params.id);
+        // Respondemos con mensaje de exito y el evento eliminado.
+        res.json({
+            mensaje: "Evento eliminado correctamente",
+            evento
+        });
+    } catch (error) {
+        // Respondemos con error 500 si falla la eliminacion.
+        res.status(500).json({
+            mensaje: "Error al eliminar evento",
+            error
+        });
+    }
+});
+
+// Ruta para actualizar un evento por id.
+app.put("/eventos/:id", async (req, res) => {
+    // Iniciamos bloque para capturar errores.
+    try {
+        // Actualizamos el evento con nuevos datos y devolvemos la version actualizada.
+        const eventoActualizado = await Evento.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        // Respondemos con mensaje de exito y el evento actualizado.
+        res.json({
+            mensaje: "Evento actualizado correctamente",
+            evento: eventoActualizado
+        });
+    } catch (error) {
+        // Respondemos con error 500 si falla la actualizacion.
+        res.status(500).json({
+            mensaje: "Error al actualizar evento",
+            error
+        });
+    }
+});
+
+// Iniciamos el servidor en el puerto definido.
 app.listen(PORT, () => {
-
+    // Mostramos URL local para abrirlo en el navegador.
     console.log(`Servidor iniciado en http://localhost:${PORT}`);
-
 });
